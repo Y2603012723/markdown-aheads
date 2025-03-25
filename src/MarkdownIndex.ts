@@ -50,6 +50,12 @@ export class MarkdownIndex {
         return count;
     }
 
+    // private _addIndex(
+    //     content: string[],     // 正在处理的完整文档内容（按行分割的数组）
+    //     lastMarkCount: number, // 上一级标题的 # 数量（用于确定嵌套层级）
+    //     prefix: string,        // 当前层级的序号前缀（如 "1.2."）
+    //     cursor: number         // 当前处理的行号索引（从 0 开始）
+    // ): number                 // 返回最后处理的行号索引
     private _addIndex(content: string[], lastMarkCount: number, prefix: string, cursor: number): number {
         // leave the normal line and count this._indexBase
         let targetMarkCount = 0;
@@ -68,7 +74,7 @@ export class MarkdownIndex {
             if (isInCodeArea === false && line.startsWith(this._indexBase)) {
                 // find the start mark count
                 targetMarkCount = this._countStartsWith(
-                    x => { return x === this._indexBase },
+                    x => { return x === this._indexBase; },
                     line.split("")
                 );
                 break;
@@ -80,10 +86,10 @@ export class MarkdownIndex {
         let seq = 1;
         while (cursor < content.length) {
             let markCount = this._countStartsWith(
-                x => { return x === this._indexBase },
+                x => { return x === this._indexBase; },
                 content[cursor].split("")
             );
-            if (markCount == targetMarkCount && markCount > lastMarkCount) {
+            if (markCount === targetMarkCount && markCount > lastMarkCount) {
                 let curPrefix = prefix + seq + ".";
                 content[cursor] = this._addPrefix(content[cursor], curPrefix, markCount);
                 seq++;
