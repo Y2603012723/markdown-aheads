@@ -15,11 +15,12 @@ export class MarkdownIndex {
     constructor() {
         // load the configuration
 
-        //   const configuration = workspace.getConfiguration("markdownIndex"); 
-        //   const configBase = configuration.get<string>("indexBase");
-        //   if (configBase && configBase.length > 0) {
-        //       this._indexBase = configBase;
-        //   }
+          const configuration = workspace.getConfiguration("markdownAheads"); 
+          const configBase = configuration.get<string>("StartingLevelOfSerialNumber");
+          if (configBase && configBase.length > 0) {
+              this._indexBase = configBase;
+          }
+          console.log("indexBase: " + this._indexBase);
     }
 
     private _addPrefix(line: string, prefix: string, markCount: number) {
