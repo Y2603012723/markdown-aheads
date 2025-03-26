@@ -82,7 +82,10 @@ export class MarkdownIndex {
                     x => { return x === this._indexBase; },
                     line.split("")
                 );
-                break;
+                // 新增级别判断：仅当标题级别达到起始级别时处理
+                if (targetMarkCount >= this._startingLevelOfSerialNumber) {
+                    break;
+                }
             }
             cursor++;
 
@@ -94,7 +97,9 @@ export class MarkdownIndex {
                 x => { return x === this._indexBase; },
                 content[cursor].split("")
             );
-            if (markCount === targetMarkCount && markCount > lastMarkCount) {
+            if (markCount >= this._startingLevelOfSerialNumber && 
+                markCount === targetMarkCount && 
+                markCount > lastMarkCount) {
                 let curPrefix = prefix + seq + ".";
                 content[cursor] = this._addPrefix(content[cursor], curPrefix, markCount);
                 seq++;
@@ -113,5 +118,25 @@ export class MarkdownIndex {
     public addMarkdownIndex(content: string[]) {
         this._addIndex(content, 0, "", 0);
         return content;
+    }
+
+    private _removePrefix(line: string): string {
+        // 匹配标题中的序号模式（如：## 1.2.3 文本）
+        const re = new RegExp(`(^\\s*\\${this._indexBase}+)\\s+((\\d+\\.)+)\\s`, "g");
+        return line.replace(re, "$1 ");
+    }
+
+    public removeMarkdownIndex(content: string[]): string[] {
+        let isInCodeArea = false;
+        return content.map(line => {
+            if (line.startsWith("```")) {
+                isInCodeArea = !isInCodeArea;
+                return line;
+            }
+            if (!isInCodeArea && line.startsWith(this._indexBase)) {
+                return this._removePrefix(line);
+            }
+            return line;
+        });
     }
 }

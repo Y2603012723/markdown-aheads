@@ -15,11 +15,35 @@
     "commands": [
       {
         "command": "markdown-aheads.helloWorld",
-        "title": "markdown-aheads-HelloWorld"
+        "title": "markdown aheads HelloWorld"
       },
       {
         "command": "markdown-aheads.addMarkdownIndex",
-        "title": "markdown-aheads-add-index"
+        "title": "markdown aheads add index"
+      },
+      {
+        "command": "markdown-aheads.removeMarkdownIndex",
+        "title": "markdown aheads remove index"
+      },
+      {
+        "command": "markdown-aheads.TitleUpgrade",
+        "title": "markdown aheads title upgrade"
+      },
+      {
+        "command": "markdown-aheads.TitleDowngrade",
+        "title": "markdown aheads title downgrade"
+      },
+      {
+        "command": "markdown-aheads.TOCCreate",
+        "title": "markdown aheads table of contents create"
+      },
+      {
+        "command": "markdown-aheads.TOCUpdate",
+        "title": "markdown aheads table of contents update"
+      },
+      {
+        "command": "markdown-aheads.TOCDelete",
+        "title": "markdown aheads table of contents delete"
       }
     ],
     "configuration": {

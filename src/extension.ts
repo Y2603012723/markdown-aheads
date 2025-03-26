@@ -2,7 +2,7 @@
  * @Author: ykubuntu2204 y2603012723@163.com
  * @Date: 2025-03-25 16:02:00
  * @LastEditors: ykubuntu2204 y2603012723@163.com
- * @LastEditTime: 2025-03-26 09:23:27
+ * @LastEditTime: 2025-03-26 14:12:36
  * @FilePath: /markdown-aheads/src/extension.ts
  * @Description: 
  * 
@@ -13,6 +13,8 @@
 import * as vscode from 'vscode';
 import { workspace } from "vscode";
 import { MarkdownIndex } from './MarkdownIndex';
+import { MarkdownTitleUpDown } from './MarkdownTitleUpDown';
+import { TOCTool } from './TOCtool';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -81,6 +83,149 @@ export function activate(context: vscode.ExtensionContext) {
             builder.replace(new vscode.Range(selection.start, selection.end), resultText);
         });
     }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.removeMarkdownIndex', () => {
+        // The code you place here will be executed every time your command is executed
+
+        var editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showInformationMessage('No open text editor');
+            return; // No open text editor
+        }
+
+        var selection = editor.selection;
+        var text = editor.document.getText(selection);
+        var lines: string[];
+        if (text.length === 0) {
+            // use all text if no selection
+            lines = editor.document.getText().split("\n");
+            selection = new vscode.Selection(0, 0, lines.length, 0);
+        } else {
+            lines = text.split("\n");
+        }
+
+        // apply plugin
+        const markdownIndex = new MarkdownIndex();
+        let newlines = markdownIndex.removeMarkdownIndex(lines);
+
+        editor.edit(function (builder: vscode.TextEditorEdit) {
+            var resultText = newlines.join("\n");
+            builder.replace(new vscode.Range(selection.start, selection.end), resultText);
+        });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.TitleUpgrade', () => {
+        // The code you place here will be executed every time your command is executed
+
+        var editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showInformationMessage('No open text editor');
+            return; // No open text editor
+        }
+        const currentLine = editor.selection.active.line;
+        const processor = new MarkdownTitleUpDown(
+            editor.document.getText().split("\n"),
+            currentLine
+        );
+
+        if (processor.isMaxLevel()) {
+            vscode.window.showInformationMessage("已达最高级别（#），无法继续升级");
+            return;
+        }
+        
+        const newContent = processor.process('up');
+        editor.edit(edit => {
+            // 修复点1：添加非空断言操作符
+            const range = new vscode.Range(
+                0, 
+                0, 
+                editor!.document.lineCount,  // 使用!断言
+                0
+            );
+            // 修复点2：更安全的范围生成方式
+            edit.replace(range, newContent.join("\n"));
+        });
+
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.TitleDowngrade', () => {
+        // The code you place here will be executed every time your command is executed
+
+        var editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showInformationMessage('No open text editor');
+            return; // No open text editor
+        }
+        const currentLine = editor.selection.active.line;
+        const processor = new MarkdownTitleUpDown(
+            editor.document.getText().split("\n"),
+            currentLine
+        );
+
+        if (processor.hasMinLevelInChildren()) {
+            vscode.window.showInformationMessage("存在已达最低级别（######）的子标题，无法继续降级");
+            return;
+        }
+        
+        const newContent = processor.process('down');
+        editor.edit(edit => {
+            // 修复点1：添加非空断言操作符
+            const range = new vscode.Range(
+                0, 
+                0, 
+                editor!.document.lineCount,  // 使用!断言
+                0
+            );
+            // 修复点2：更安全的范围生成方式
+            edit.replace(range, newContent.join("\n"));
+        });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.TOCCreate', () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {return;}
+
+        const config = workspace.getConfiguration("markdownAheads");
+        const startLevel = config.get<number>("StartingLevelOfSerialNumber") || 2;
+        const toCTool = new TOCTool();
+        const lines = editor.document.getText().split("\n");
+        const toc = toCTool.generateTOC(lines, startLevel);
+        
+        editor.edit(edit => {
+            const pos = editor.selection.active;
+            edit.insert(new vscode.Position(pos.line, 0), toc.join("\n") + "\n\n");
+        });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.TOCUpdate', () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) return;
+
+        const config = workspace.getConfiguration("markdownAheads");
+        const startLevel = config.get<number>("StartingLevelOfSerialNumber") || 2;
+        const toCTool = new TOCTool();
+        const lines = editor.document.getText().split("\n");
+        const newContent = toCTool.processTOC(lines, 'update', startLevel);
+        
+        editor.edit(edit => {
+            const range = new vscode.Range(0, 0, editor.document.lineCount, 0);
+            edit.replace(range, newContent.join("\n"));
+        });
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.TOCDelete', () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {return;}
+        const toCTool = new TOCTool();
+        const lines = editor.document.getText().split("\n");
+        const newContent = toCTool.processTOC(lines, 'delete', 0);
+        
+        editor.edit(edit => {
+            const range = new vscode.Range(0, 0, editor.document.lineCount, 0);
+            edit.replace(range, newContent.join("\n"));
+        });
+    }));
+
 }
 
 // This method is called when your extension is deactivated
