@@ -115,8 +115,57 @@ export class MarkdownIndex {
         return cursor;
     }
 
-    public addMarkdownIndex(content: string[]) {
-        this._addIndex(content, 0, "", 0);
+    public addMarkdownIndex(content: string[]): string[] {
+        // 用于追踪每个级别的序号
+        const levelCounters: number[] = new Array(6).fill(0);
+        let isInCodeArea = false;
+        
+        // 遍历每一行
+        for (let i = 0; i < content.length; i++) {
+            const line = content[i];
+            
+            // 处理代码块标记
+            if (line.startsWith("```")) {
+                isInCodeArea = !isInCodeArea;
+                continue;
+            }
+            
+            // 跳过代码块内的内容
+            if (isInCodeArea || !line.startsWith(this._indexBase)) {
+                continue;
+            }
+            
+            // 计算当前标题的级别
+            const level = this._countStartsWith(
+                x => x === this._indexBase,
+                line.split("")
+            );
+            
+            // 只处理达到起始级别的标题
+            if (level < this._startingLevelOfSerialNumber) {
+                continue;
+            }
+            
+            // 重置更深层级的计数器
+            for (let j = level; j < levelCounters.length; j++) {
+                levelCounters[j] = 0;
+            }
+            
+            // 增加当前级别的计数
+            levelCounters[level - 1]++;
+            
+            // 构建标题序号
+            let prefix = "";
+            for (let j = this._startingLevelOfSerialNumber - 1; j < level; j++) {
+                if (levelCounters[j] > 0) {
+                    prefix += levelCounters[j] + ".";
+                }
+            }
+            
+            // 更新行内容
+            content[i] = this._addPrefix(line, prefix, level);
+        }
+        
         return content;
     }
 
