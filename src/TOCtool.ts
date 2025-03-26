@@ -2,7 +2,7 @@
  * @Author: ykubuntu2204 y2603012723@163.com
  * @Date: 2025-03-26 13:22:58
  * @LastEditors: ykubuntu2204 y2603012723@163.com
- * @LastEditTime: 2025-03-26 14:08:41
+ * @LastEditTime: 2025-03-26 16:07:20
  * @FilePath: /markdown-aheads/src/TOCtool.ts
  * @Description: 
  * 
@@ -26,6 +26,13 @@ export class TOCTool {
                 const levelMatch = line.match(/^(#+)\s/);
                 if (levelMatch) {
                     const level = levelMatch[1].length;
+                    //如果正好是标题开始级别的上一级
+                    if(level - startLevel === -1){
+                        // toc.push("*\n*\n*\n");
+                        toc.push("\n");
+                        // toc.push(line);
+                        // toc.push(line.replace(/^#+\s/, '').trim());
+                    }
                     if (level >= startLevel && level <= 6) {
                         const depth = level - startLevel;
                         if (depth >= 0) {

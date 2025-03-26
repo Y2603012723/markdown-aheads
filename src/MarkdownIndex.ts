@@ -140,6 +140,8 @@ export class MarkdownIndex {
                 line.split("")
             );
 
+ 
+
             if (level < this._startingLevelOfSerialNumber) {
                 // 遇到高级标题时重置所有计数器
                 levelCounters.fill(0);
@@ -147,12 +149,20 @@ export class MarkdownIndex {
                 continue;
             }
 
-            // 如果当前级别小于上一个级别，重置更深层级的计数器
-            if (level <= lastLevel) {
+
+            // 修复点：仅重置当前级别及更深层级的计数器
+            if (level < lastLevel) {
+                // 从当前层级开始重置（保留更高级别的计数器）
                 for (let j = level; j < levelCounters.length; j++) {
                     levelCounters[j] = 0;
                 }
+            }else if(level - lastLevel > 1){
+                // 遇到不连续的标题级别,需要把其父级别都加1
+                for(let j = lastLevel; j < level-1; j++){
+                    levelCounters[j]++;
+                }
             }
+
 
             // 增加当前级别的计数
             levelCounters[level - 1]++;
@@ -169,10 +179,10 @@ export class MarkdownIndex {
             }
 
             // 确保序号包含所有层级
-            while (validNumbers < (level - this._startingLevelOfSerialNumber + 1)) {
-                prefix = "1." + prefix;
-                validNumbers++;
-            }
+            // while (validNumbers < (level - this._startingLevelOfSerialNumber + 1)) {
+            //     prefix = "1." + prefix;
+            //     validNumbers++;
+            // }
 
             // 更新行内容
             content[i] = this._addPrefix(line, prefix, level);
