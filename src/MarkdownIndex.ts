@@ -16,7 +16,7 @@ export class MarkdownIndex {
     private _startingLevelOfSerialNumber: number = 2;
 
     constructor() {
-        const configuration = workspace.getConfiguration("markdownAheads"); 
+        const configuration = workspace.getConfiguration("markdownAheads");
         let configTitleStartIdentification = configuration.get<string>("TitleStartIdentification");
         if (configTitleStartIdentification && typeof configTitleStartIdentification === "string" && configTitleStartIdentification.length > 0) {
             this._indexBase = configTitleStartIdentification;
@@ -97,8 +97,8 @@ export class MarkdownIndex {
                 x => { return x === this._indexBase; },
                 content[cursor].split("")
             );
-            if (markCount >= this._startingLevelOfSerialNumber && 
-                markCount === targetMarkCount && 
+            if (markCount >= this._startingLevelOfSerialNumber &&
+                markCount === targetMarkCount &&
                 markCount > lastMarkCount) {
                 let curPrefix = prefix + seq + ".";
                 content[cursor] = this._addPrefix(content[cursor], curPrefix, markCount);
@@ -119,53 +119,65 @@ export class MarkdownIndex {
         // 用于追踪每个级别的序号
         const levelCounters: number[] = new Array(6).fill(0);
         let isInCodeArea = false;
-        
+        let lastLevel = 0;  // 记录上一个标题的级别
+
         // 遍历每一行
         for (let i = 0; i < content.length; i++) {
             const line = content[i];
-            
-            // 处理代码块标记
+
             if (line.startsWith("```")) {
                 isInCodeArea = !isInCodeArea;
                 continue;
             }
-            
-            // 跳过代码块内的内容
+
             if (isInCodeArea || !line.startsWith(this._indexBase)) {
                 continue;
             }
-            
+
             // 计算当前标题的级别
             const level = this._countStartsWith(
                 x => x === this._indexBase,
                 line.split("")
             );
-            
-            // 只处理达到起始级别的标题
+
             if (level < this._startingLevelOfSerialNumber) {
+                // 遇到高级标题时重置所有计数器
+                levelCounters.fill(0);
+                lastLevel = level;
                 continue;
             }
-            
-            // 重置更深层级的计数器
-            for (let j = level; j < levelCounters.length; j++) {
-                levelCounters[j] = 0;
+
+            // 如果当前级别小于上一个级别，重置更深层级的计数器
+            if (level <= lastLevel) {
+                for (let j = level; j < levelCounters.length; j++) {
+                    levelCounters[j] = 0;
+                }
             }
-            
+
             // 增加当前级别的计数
             levelCounters[level - 1]++;
-            
-            // 构建标题序号
+            lastLevel = level;
+
+            // 构建完整的层级序号
             let prefix = "";
+            let validNumbers = 0;
             for (let j = this._startingLevelOfSerialNumber - 1; j < level; j++) {
                 if (levelCounters[j] > 0) {
+                    validNumbers++;
                     prefix += levelCounters[j] + ".";
                 }
             }
-            
+
+            // 确保序号包含所有层级
+            while (validNumbers < (level - this._startingLevelOfSerialNumber + 1)) {
+                prefix = "1." + prefix;
+                validNumbers++;
+            }
+
             // 更新行内容
             content[i] = this._addPrefix(line, prefix, level);
         }
-        
+
         return content;
     }
 
