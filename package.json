@@ -27,9 +27,14 @@
       "title": "markdown aheads",
       "properties": {
         "markdownAheads.StartingLevelOfSerialNumber": {
+          "type": "number",
+          "default": 2,
+          "description": "Starting Level Of Serial Number(1-5)"
+        },
+        "markdownAheads.TitleStartIdentification": {
           "type": "string",
           "default": "#",
-          "description": "Starting Level Of Serial Number"
+          "description": "Title Start Identification(single character)"
         }
       }
     }

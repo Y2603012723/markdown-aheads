@@ -9,18 +9,22 @@ import { workspace } from "vscode";
  */
 export class MarkdownIndex {
 
-    // index base configuration for user, default value is "#"
+    // 标题开始标识 index base configuration for user, default value is "#"
     private _indexBase: string = "#";
 
-    constructor() {
-        // load the configuration
+    // 序号开始级别，默认一级标题不加序号，从二级标题开始加序号
+    private _startingLevelOfSerialNumber: number = 2;
 
-          const configuration = workspace.getConfiguration("markdownAheads"); 
-          const configBase = configuration.get<string>("StartingLevelOfSerialNumber");
-          if (configBase && configBase.length > 0) {
-              this._indexBase = configBase;
-          }
-          console.log("indexBase: " + this._indexBase);
+    constructor() {
+        const configuration = workspace.getConfiguration("markdownAheads"); 
+        let configTitleStartIdentification = configuration.get<string>("TitleStartIdentification");
+        if (configTitleStartIdentification && typeof configTitleStartIdentification === "string" && configTitleStartIdentification.length > 0) {
+            this._indexBase = configTitleStartIdentification;
+        }
+        let configStartingLevelOfSerialNumber = configuration.get<number>("StartingLevelOfSerialNumber");
+        if (configStartingLevelOfSerialNumber && Number.isInteger(configStartingLevelOfSerialNumber) && configStartingLevelOfSerialNumber > 0 && configStartingLevelOfSerialNumber < 6) {
+            this._startingLevelOfSerialNumber = configStartingLevelOfSerialNumber;
+        }
     }
 
     private _addPrefix(line: string, prefix: string, markCount: number) {

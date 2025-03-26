@@ -2,7 +2,7 @@
  * @Author: ykubuntu2204 y2603012723@163.com
  * @Date: 2025-03-25 16:02:00
  * @LastEditors: ykubuntu2204 y2603012723@163.com
- * @LastEditTime: 2025-03-25 16:26:14
+ * @LastEditTime: 2025-03-26 09:23:27
  * @FilePath: /markdown-aheads/src/extension.ts
  * @Description: 
  * 
@@ -11,6 +11,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { workspace } from "vscode";
 import { MarkdownIndex } from './MarkdownIndex';
 
 // This method is called when your extension is activated
@@ -27,6 +28,25 @@ export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('markdown-aheads.helloWorld', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
+
+        const configuration = workspace.getConfiguration("markdownAheads");
+        let configStartingLevelOfSerialNumber = configuration.get<number>("StartingLevelOfSerialNumber");
+        // 添加整数验证并使用组合条件表达式
+        if (configStartingLevelOfSerialNumber && Number.isInteger(configStartingLevelOfSerialNumber) && configStartingLevelOfSerialNumber > 0 && configStartingLevelOfSerialNumber < 6) {
+
+        }else{
+            configStartingLevelOfSerialNumber = 2;
+        }
+        console.log("configStartingLevelOfSerialNumber: " + configStartingLevelOfSerialNumber);
+
+        let configTitleStartIdentification = configuration.get<string>("TitleStartIdentification");
+        // 添加字符串验证并使用组合条件表达式
+        if (configTitleStartIdentification && typeof configTitleStartIdentification === "string" && configTitleStartIdentification.length > 0) {
+        }else{
+            configTitleStartIdentification = "#";
+        }
+        console.log("configTitleStartIdentification: " + configTitleStartIdentification);
+
 		vscode.window.showInformationMessage('Hello World from markdown-aheads!');
 	});
 
