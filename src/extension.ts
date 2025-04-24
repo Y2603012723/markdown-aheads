@@ -2,7 +2,7 @@
  * @Author: ykubuntu2204 y2603012723@163.com
  * @Date: 2025-03-25 16:02:00
  * @LastEditors: ykubuntu2204 y2603012723@163.com
- * @LastEditTime: 2025-03-26 14:12:36
+ * @LastEditTime: 2025-04-24 17:10:33
  * @FilePath: /markdown-aheads/src/extension.ts
  * @Description: 
  * 
@@ -20,23 +20,23 @@ import { TOCTool } from './TOCtool';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations111, your extension "markdown-aheads" is now active!');
+    // Use the console to output diagnostic information (console.log) and errors (console.error)
+    // This line of code will only be executed once when your extension is activated
+    console.log('Congratulations111, your extension "markdown-aheads" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('markdown-aheads.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
+    // The command has been defined in the package.json file
+    // Now provide the implementation of the command with registerCommand
+    // The commandId parameter must match the command field in package.json
+    const disposable = vscode.commands.registerCommand('markdown-aheads.helloWorld', () => {
+        // The code you place here will be executed every time your command is executed
+        // Display a message box to the user
 
         const configuration = workspace.getConfiguration("markdownAheads");
         let configStartingLevelOfSerialNumber = configuration.get<number>("StartingLevelOfSerialNumber");
         // 添加整数验证并使用组合条件表达式
         if (configStartingLevelOfSerialNumber && Number.isInteger(configStartingLevelOfSerialNumber) && configStartingLevelOfSerialNumber > 0 && configStartingLevelOfSerialNumber < 6) {
 
-        }else{
+        } else {
             configStartingLevelOfSerialNumber = 2;
         }
         console.log("configStartingLevelOfSerialNumber: " + configStartingLevelOfSerialNumber);
@@ -44,17 +44,17 @@ export function activate(context: vscode.ExtensionContext) {
         let configTitleStartIdentification = configuration.get<string>("TitleStartIdentification");
         // 添加字符串验证并使用组合条件表达式
         if (configTitleStartIdentification && typeof configTitleStartIdentification === "string" && configTitleStartIdentification.length > 0) {
-        }else{
+        } else {
             configTitleStartIdentification = "#";
         }
         console.log("configTitleStartIdentification: " + configTitleStartIdentification);
 
-		vscode.window.showInformationMessage('Hello World from markdown-aheads!');
-	});
+        vscode.window.showInformationMessage('Hello World from markdown-aheads!');
+    });
 
-	context.subscriptions.push(disposable);
+    context.subscriptions.push(disposable);
 
-	context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.addMarkdownIndex', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.addMarkdownIndex', () => {
         // The code you place here will be executed every time your command is executed
 
         var editor = vscode.window.activeTextEditor;
@@ -132,13 +132,13 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage("已达最高级别（#），无法继续升级");
             return;
         }
-        
+
         const newContent = processor.process('up');
         editor.edit(edit => {
             // 修复点1：添加非空断言操作符
             const range = new vscode.Range(
-                0, 
-                0, 
+                0,
+                0,
                 editor!.document.lineCount,  // 使用!断言
                 0
             );
@@ -166,13 +166,13 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage("存在已达最低级别（######）的子标题，无法继续降级");
             return;
         }
-        
+
         const newContent = processor.process('down');
         editor.edit(edit => {
             // 修复点1：添加非空断言操作符
             const range = new vscode.Range(
-                0, 
-                0, 
+                0,
+                0,
                 editor!.document.lineCount,  // 使用!断言
                 0
             );
@@ -183,30 +183,31 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.TOCCreate', () => {
         const editor = vscode.window.activeTextEditor;
-        if (!editor) {return;}
+        if (!editor) { return; }
 
         const config = workspace.getConfiguration("markdownAheads");
         const startLevel = config.get<number>("StartingLevelOfSerialNumber") || 2;
         const toCTool = new TOCTool();
         const lines = editor.document.getText().split("\n");
         const toc = toCTool.generateTOC(lines, startLevel);
-        
+
         editor.edit(edit => {
             const pos = editor.selection.active;
-            edit.insert(new vscode.Position(pos.line, 0), toc.join("\n") + "\n\n");
+            // edit.insert(new vscode.Position(pos.line, 0), toc.join("\n") + "\n\n");
+            edit.insert(new vscode.Position(pos.line, 0), toc.join("\n") + "\n");
         });
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.TOCUpdate', () => {
         const editor = vscode.window.activeTextEditor;
-        if (!editor) return;
+        if (!editor) { return; }
 
         const config = workspace.getConfiguration("markdownAheads");
         const startLevel = config.get<number>("StartingLevelOfSerialNumber") || 2;
         const toCTool = new TOCTool();
         const lines = editor.document.getText().split("\n");
         const newContent = toCTool.processTOC(lines, 'update', startLevel);
-        
+
         editor.edit(edit => {
             const range = new vscode.Range(0, 0, editor.document.lineCount, 0);
             edit.replace(range, newContent.join("\n"));
@@ -215,11 +216,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand('markdown-aheads.TOCDelete', () => {
         const editor = vscode.window.activeTextEditor;
-        if (!editor) {return;}
+        if (!editor) { return; }
         const toCTool = new TOCTool();
         const lines = editor.document.getText().split("\n");
         const newContent = toCTool.processTOC(lines, 'delete', 0);
-        
+
         editor.edit(edit => {
             const range = new vscode.Range(0, 0, editor.document.lineCount, 0);
             edit.replace(range, newContent.join("\n"));
@@ -229,4 +230,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

@@ -2,51 +2,58 @@
  * @Author: ykubuntu2204 y2603012723@163.com
  * @Date: 2025-03-26 13:22:58
  * @LastEditors: ykubuntu2204 y2603012723@163.com
- * @LastEditTime: 2025-03-26 16:07:20
+ * @LastEditTime: 2025-04-24 17:23:48
  * @FilePath: /markdown-aheads/src/TOCtool.ts
  * @Description: 
  * 
  * Copyright (c) 2025 by ${git_name_email}, All Rights Reserved. 
  */
 export class TOCTool {
-    private readonly TOC_START = '<!-- TOC -->';
-    private readonly TOC_END = '<!-- /TOC -->';
     private slugCounts: Record<string, number> = {};
 
+    /**
+     * 生成Markdown目录
+     * @param lines 文档内容行数组
+     * @param startLevel 目录起始层级（例如2表示从##开始）
+     * @returns 生成的目录行数组
+     */
     public generateTOC(lines: string[], startLevel: number): string[] {
-        const toc: string[] = [this.TOC_START, ''];
+        const toc: string[] = [];
         let isInCodeBlock = false;
         this.slugCounts = {}; // 重置计数器
 
         lines.forEach(line => {
-            if (line.startsWith('```')) {isInCodeBlock = !isInCodeBlock;}
-            if (isInCodeBlock) {return;}
+            // 检测代码块开始/结束标记
+            if (line.startsWith('```')) { isInCodeBlock = !isInCodeBlock; }
+            if (isInCodeBlock) { return; } // 跳过代码块中的内容
 
             if (line.startsWith('#')) {
                 const levelMatch = line.match(/^(#+)\s/);
                 if (levelMatch) {
                     const level = levelMatch[1].length;
-                    //如果正好是标题开始级别的上一级
-                    if(level - startLevel === -1){
-                        // toc.push("*\n*\n*\n");
-                        toc.push("\n");
-                        // toc.push(line);
-                        // toc.push(line.replace(/^#+\s/, '').trim());
-                    }
+                    // 当遇到起始层级的父级标题时（例如startLevel=2时遇到#标题）
+                    // if (level - startLevel === -1) {
+                    //     if (toc.length > 1 && toc[toc.length - 1] !== '\n') {
+                    //         toc.push('\n');
+                    //     }
+                    // }
+
+                    // 处理符合层级范围的标题（startLevel到h6）
                     if (level >= startLevel && level <= 6) {
-                        const depth = level - startLevel;
+                        const depth = level - startLevel; // 计算相对于起始层级的深度
                         if (depth >= 0) {
                             const title = line.replace(/^#+\s/, '').trim();
                             let slug = this.slug(title);
-                            
-                            // 处理重复标题
+
+                            // 处理重复标题的锚点冲突
                             if (this.slugCounts[slug]) {
                                 const count = this.slugCounts[slug]++;
-                                slug = `${slug}-${count}`;
+                                slug = `${slug}-${count}`; // 追加序号保证唯一性
                             } else {
                                 this.slugCounts[slug] = 1;
                             }
 
+                            // 生成带缩进的目录项
                             const indent = '  '.repeat(depth);
                             toc.push(`${indent}- [${title}](#${slug})`);
                         }
@@ -55,32 +62,39 @@ export class TOCTool {
             }
         });
 
-        toc.push('', this.TOC_END);
+        // toc.push(this.TOC_END);
         return toc;
     }
 
     // 更新或删除目录
-    public processTOC(lines: string[], operation: 'update'|'delete', startLevel: number): string[] {
+    public processTOC(lines: string[], operation: 'update' | 'delete', startLevel: number): string[] {
         let inTOC = false;
         const newLines: string[] = [];
-        
+
         lines.forEach(line => {
-            if (line === this.TOC_START) {
+            // 检测目录项起始模式 (支持带空格的缩进)
+            const isTOCLine = /^\s*-\s\[/.test(line);
+            if (!inTOC && isTOCLine) {
                 inTOC = true;
                 if (operation === 'update') {
                     newLines.push(...this.generateTOC(lines, startLevel));
                 }
             }
-            
-            if (!inTOC) {
-                newLines.push(line);
-            }
-            
-            if (line === this.TOC_END) {
+
+            // 当遇到非目录行且处于目录区域时，结束目录
+            if (inTOC && !isTOCLine) {
                 inTOC = false;
             }
+
+
+            if (!inTOC) {
+                // 不在目录区域时才保留原行
+                if (!isTOCLine || operation !== 'delete') {
+                    newLines.push(line);
+                }
+            }
         });
-        
+
         return newLines;
     }
 
