@@ -2,7 +2,7 @@
   "name": "markdown-aheads",
   "displayName": "markdown aheads",
   "description": "markdown Title and Table of Contents Processing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.98.0"
   },
