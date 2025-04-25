@@ -1,9 +1,5 @@
-# Change Log
+# 更新记录
 
-All notable changes to the "markdown-aheads" extension will be documented in this file.
+## [version1.0.0 20250425]
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+- 初始版本

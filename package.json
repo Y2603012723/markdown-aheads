@@ -1,8 +1,8 @@
 {
   "name": "markdown-aheads",
-  "displayName": "markdown-aheads",
+  "displayName": "markdown aheads",
   "description": "markdown Title and Table of Contents Processing",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.98.0"
   },
@@ -15,31 +15,38 @@
     "commands": [
       {
         "command": "markdown-aheads.addMarkdownIndex",
-        "title": "markdown aheads add index"
+        "title": "%AHeads:AddIndex%",
+        "category": "AHeads"
       },
       {
         "command": "markdown-aheads.removeMarkdownIndex",
-        "title": "markdown aheads remove index"
+        "title": "%AHeads:RemoveIndex%",
+        "category": "AHeads"
       },
       {
         "command": "markdown-aheads.TitleUpgrade",
-        "title": "markdown aheads title upgrade"
+        "title": "%AHeads:TitleUpgrade%",
+        "category": "AHeads"
       },
       {
         "command": "markdown-aheads.TitleDowngrade",
-        "title": "markdown aheads title downgrade"
+        "title": "%AHeads:TitleDowngrade%",
+        "category": "AHeads"
       },
       {
         "command": "markdown-aheads.TOCCreate",
-        "title": "markdown aheads table of contents create"
+        "title": "%AHeads:TableOfContentsCreate%",
+        "category": "AHeads"
       },
       {
         "command": "markdown-aheads.TOCUpdate",
-        "title": "markdown aheads table of contents update"
+        "title": "%AHeads:TableOfContentsUpdate%",
+        "category": "AHeads"
       },
       {
         "command": "markdown-aheads.TOCDelete",
-        "title": "markdown aheads table of contents delete"
+        "title": "%AHeads.TableOfContentsDelete%",
+        "category": "AHeads"
       }
     ],
     "configuration": {
@@ -49,12 +56,12 @@
         "markdownAheads.StartingLevelOfSerialNumber": {
           "type": "number",
           "default": 2,
-          "description": "Starting Level Of Serial Number(1-5)"
+          "description": "%Starting Level Of Serial Number(1-5)%"
         },
         "markdownAheads.TitleStartIdentification": {
           "type": "string",
           "default": "#",
-          "description": "Title Start Identification(single character)"
+          "description": "%Title Start Identification(single character)%"
         }
       }
     }
@@ -83,6 +90,10 @@
     "typescript": "^5.7.2",
     "webpack": "^5.98.0",
     "webpack-cli": "^5.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Y2603012723/abuild.git"
   },
   "publisher": "yangkang",
   "icon": "image/markdown-aheads.png"

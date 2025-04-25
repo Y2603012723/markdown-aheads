@@ -1,0 +1,11 @@
+{
+    "AHeads:AddIndex": "添加标题序号",
+    "AHeads:RemoveIndex": "移除标题序号",
+    "AHeads:TitleUpgrade": "标题升级",
+    "AHeads:TitleDowngrade": "标题降级",
+    "AHeads:TableOfContentsCreate": "创建目录",
+    "AHeads:TableOfContentsUpdate": "更新目录",
+    "AHeads.TableOfContentsDelete": "删除目录",
+    "Starting Level Of Serial Number(1-5)": "序号起始标题级别(1-5)",
+    "Title Start Identification(single character)": "标题起始标识(单个字符)"
+}

@@ -2,7 +2,7 @@
  * @Author: ykubuntu2204 y2603012723@163.com
  * @Date: 2025-03-26 10:41:42
  * @LastEditors: ykubuntu2204 y2603012723@163.com
- * @LastEditTime: 2025-03-26 12:06:16
+ * @LastEditTime: 2025-04-25 10:33:55
  * @FilePath: /markdown-aheads/src/MarkdownTitleUpDown.ts
  * @Description: 
  * 
@@ -52,24 +52,24 @@ export class MarkdownTitleUpDown {
     }
 
     // 核心处理方法
-    public process(operation: 'up'|'down'): string[] {
+    public process(operation: 'up' | 'down'): string[] {
         const currentLineText = this.content[this.currentLine];
-        if (!this._isTitleLine(currentLineText)) {return this.content;}
-        
+        if (!this._isTitleLine(currentLineText)) { return this.content; }
+
         // 修复点1：添加完整的结构解构
         const [baseIndent, baseLevel, baseContent] = this._parseTitleLine(currentLineText);
-        if (baseLevel < 1) {return this.content;} // 修复点2：修改判断条件
+        if (baseLevel < 1) { return this.content; } // 修复点2：修改判断条件
 
         // 收集所有需要修改的标题行
         const targetLines = this._collectChildLines(this.currentLine, baseLevel);
-        
+
         // 执行修改
         targetLines.forEach(lineIndex => {
             const [indent, level, content] = this._parseTitleLine(this.content[lineIndex]);
-            const newLevel = operation === 'up' 
-                ? Math.max(1, level - 1) 
+            const newLevel = operation === 'up'
+                ? Math.max(1, level - 1)
                 : Math.min(6, level + 1);
-            
+
             this.content[lineIndex] = `${indent}${this.indexBase.repeat(newLevel)} ${content}`;
         });
 
@@ -104,27 +104,27 @@ export class MarkdownTitleUpDown {
     private _collectChildLines(startLine: number, baseLevel: number): number[] {
         const result: number[] = [startLine];
         let isInCodeBlock = false;  // 新增代码块状态跟踪
-        
+
         for (let i = startLine + 1; i < this.content.length; i++) {
             const lineText = this.content[i];
-            
+
             // 修复点：正确处理代码块边界
             if (lineText.startsWith('```')) {
                 isInCodeBlock = !isInCodeBlock;
                 continue;
             }
-            if (isInCodeBlock) continue;
-            
+            if (isInCodeBlock) { continue; }
+
             if (this._isTitleLine(lineText)) {
                 const [_, level] = this._parseTitleLine(lineText);
-                
+
                 // 修复点：仅当遇到更高层级标题时才继续
                 if (level <= baseLevel) {
                     // 仅在非代码块状态下才会终止收集
-                    if (!isInCodeBlock) break;
+                    if (!isInCodeBlock) { break; }
                     continue;
                 }
-                
+
                 result.push(i);
                 // 递归时不重置代码块状态
                 result.push(...this._collectChildLines(i, level));

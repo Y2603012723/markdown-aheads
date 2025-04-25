@@ -1,0 +1,11 @@
+{
+    "AHeads:AddIndex": "Add Index",
+    "AHeads:RemoveIndex": "Remove Index",
+    "AHeads:TitleUpgrade": "Title Upgrade",
+    "AHeads:TitleDowngrade": "Title Downgrade",
+    "AHeads:TableOfContentsCreate": "Table Of Contents Create",
+    "AHeads:TableOfContentsUpdate": "Table Of Contents Update",
+    "AHeads.TableOfContentsDelete": "Table Of Contents Delete",
+    "Starting Level Of Serial Number(1-5)": "Starting Level Of Serial Number(1-5)",
+    "Title Start Identification(single character)": "Title Start Identification(single character)"
+}
