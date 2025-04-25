@@ -2,7 +2,7 @@
   "name": "markdown-aheads",
   "displayName": "markdown aheads",
   "description": "markdown Title and Table of Contents Processing",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.98.0"
   },
@@ -93,7 +93,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Y2603012723/abuild.git"
+    "url": "https://github.com/Y2603012723/markdown-aheads.git"
   },
   "publisher": "yangkang",
   "icon": "image/markdown-aheads.png"
