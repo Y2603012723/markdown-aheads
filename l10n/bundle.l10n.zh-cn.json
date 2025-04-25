@@ -1,0 +1,20 @@
+{
+    "greeting": "你好，世界！",
+    "transfer success": "传送成功",
+    "transfer fail" : "传送失败",
+    "cleanSuccess":"清除成功",
+    "fileDirNotExists":"文件夹不存在",
+    "farewell": "再见，世界！",
+    "Program Packing":"程序正在打包中",
+    "Program Packed Success":"程序打包成功",
+    "Program Packed Fail":"程序打包失败",
+    "Program Packed file not exist":"打包输出文件不存在",
+    "Shared directory not set" : "未设置共享目录",
+    "file not exist":"传送的执行文件不存在",
+    "OK": "确定",
+    "Cancel": "取消",
+    "The project already exists, are you sure you want to rebuild it?":"工程已存在，您确定要重建工程吗?",
+    "Successful reconstruction of the project":"工程重建成功",
+    "Cancelled": "已取消",
+    "Project creation successful":"工程创建成功"
+}

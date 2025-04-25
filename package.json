@@ -14,10 +14,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "markdown-aheads.helloWorld",
-        "title": "markdown aheads HelloWorld"
-      },
-      {
         "command": "markdown-aheads.addMarkdownIndex",
         "title": "markdown aheads add index"
       },
